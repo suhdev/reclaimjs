@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "rootDir":"./src",
+        "module": "es6",
+        "target": "es6",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "jsx":"react",
+        "sourceMap": true,
+        "outDir":"./framework"
+    },
+    "exclude": [
+        "node_modules",
+        "jspm_packages",
+        "wwwroot"
+    ]
+}
