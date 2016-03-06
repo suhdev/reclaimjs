@@ -1,0 +1,23 @@
+{
+	"mysql":{
+		"host":"localhost",
+		"user":"root",
+		"password":"",
+		"database":"reclaimjs"
+	},
+	"mariadb":{
+		"host":"localhost",
+		"user":"root",
+		"password":"",
+		"database":"reclaimjs"	
+	},
+	"pgsql":{
+		"host":"localhost",
+		"user":"root",
+		"password":"",
+		"database":"reclaimjs"		
+	},
+	"mongodb":{
+
+	}
+}

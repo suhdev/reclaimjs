@@ -1,0 +1,14 @@
+{
+	"paths":{
+		"publicPath":"./public/",
+		"assetsPath":"./public/assets/",
+		"resourcesPath":"./resources/",
+		"viewsPath":"./resoures/views/",
+		"i18nPath":"./resources/i18n/",
+		"dataPath":"./resources/data/",
+		"storagePath":"./storage/",
+		"downloadsPath":"./storage/files/",
+		"sessionsPath":"./storage/sessions/",
+		"cachePath":"./storage/cache/"
+	}
+}

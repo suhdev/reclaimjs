@@ -1,0 +1,8 @@
+{
+	"dev":{
+		baseUrl:"http://appurl.dev/"
+	},
+	"production":{
+		baseUrl:"http://www.myapp.com/"
+	}
+}

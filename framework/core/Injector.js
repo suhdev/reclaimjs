@@ -1,5 +1,6 @@
 'use strict';
-export class Injector {
+var Core_1 = require('./Core');
+class Injector {
     constructor() {
         this.components = {};
         this.instances = {};
@@ -11,10 +12,30 @@ export class Injector {
     addComponent(name, c) {
         return this.components[name] = c;
     }
+    hasComponent(name) {
+        return this.components[name];
+    }
+    hasInstance(name) {
+        return this.instances[name];
+    }
+    injectFunction(fn, ctx = null, ...args) {
+        if (typeof fn !== "function") {
+            throw new Error("Injector: provided argument is not a function");
+        }
+        let a, all = [];
+        fn.$inject = fn.$inject || Core_1.extractArgumentsFromFunction(fn);
+        if (!fn.$inject || fn.$inject.length === 0) {
+            return fn.factory ? fn.factory() : fn();
+        }
+        while ((a = fn.$inject.shift())) {
+            all.push(this.get(a));
+        }
+        return fn.factory ? fn.factory.apply(ctx, [].concat(all, Array.prototype.slice.call(args, 0))) : fn.apply(ctx, [].concat(all, Array.prototype.slice.call(args, 0)));
+    }
     _inject(name, c) {
         let a, all = [];
-        if (c.$inject.length === 0) {
-            return this.addInstance(name, c());
+        if (!c.$inject || c.$inject.length === 0) {
+            return this.addInstance(name, c.factory ? c.factory() : c());
         }
         if (this.stack.indexOf(name) !== -1) {
             throw new Error('Circular dependency: ' + this.stack.join(' -> ') + ' -> ' + name);
@@ -24,7 +45,7 @@ export class Injector {
             all.push(this.get(a));
         }
         this.stack.pop();
-        return this.instances[name] = c.apply(null, all);
+        return this.instances[name] = c.factory ? c.factory.apply(null, all) : c.apply(null, all);
     }
     get(name) {
         if (this.instances[name]) {
@@ -36,50 +57,55 @@ export class Injector {
         return this._inject(name, this.components[name]);
     }
     register() {
-        let name, callback, c;
+        let name, callback, deps, temp;
+        if (arguments.length === 0) {
+            throw new Error('Injector: no agruments provided.');
+        }
         if (arguments.length === 2) {
             if (typeof arguments[0] !== "string") {
                 throw new Error('Injector: first argument must be of type string.');
             }
+            if (arguments[2] === null) {
+                throw new Error('Injector: second argument cannot be null');
+            }
             name = arguments[0];
-            if (!(arguments[1] instanceof Array)) {
-                this.addInstance(name, arguments[1]);
+            callback = arguments[1];
+            if (typeof callback === "string" ||
+                typeof callback === "number" ||
+                (typeof callback === "object" &&
+                    !(callback instanceof Array))) {
+                this.addInstance(name, callback);
                 return this;
             }
-            c = arguments[1];
-            if (c.length === 0 || typeof c[c.length - 1] !== "function") {
-                throw new Error('Injector: second argument is an empty Array!');
-            }
-            c[c.length - 1].$inject = c.slice(0, c.length - 1);
-            this.addComponent(name, c);
-            return this;
         }
         else if (arguments.length === 1) {
-            c = arguments[0];
-            if (typeof c === "function") {
-                if (!c.name) {
-                    throw new Error("Function parameter must have a name");
+            temp = arguments[0];
+            if (typeof temp === "function") {
+                if (!temp.name) {
+                    throw new Error('Injector: anonymous functions are not supported.');
                 }
-                callback = c;
-                callback.toString()
-                    .replace(/^function[\s]+?[\S]+?\((.*?)\)/, function (e, v, k) {
-                    callback.$inject = v.trim().length > 0 ? v.trim().split(/[\s,]+/) : [];
-                    return e;
-                });
-                this.addComponent(callback.name, callback);
-                return this;
+                name = temp.name;
+                callback = temp;
             }
-            else if (c instanceof Array &&
-                typeof c[c.length - 1] === "function" &&
-                c[c.length - 1].name) {
-                callback = c[c.length - 1];
-                callback.$inject = c.slice(0, c.length - 1);
-                this.addComponent(callback.name, callback);
-                return this;
+            else if (temp instanceof Array) {
+                if (typeof temp[temp.length - 1] !== "function" ||
+                    !temp[temp.length - 1].name) {
+                    throw new Error('Injector: last item in Array is not a function or function has no name.');
+                }
+                callback = temp[temp.length - 1];
+                name = callback.name;
+            }
+            else {
+                throw new Error('Injector: unknown parameter set provided');
             }
         }
-        throw new Error('Invalid parameter');
+        callback.$inject = callback.$inject ||
+            (typeof callback.factory === "function" && Core_1.extractArgumentsFromFunction(callback.factory)) ||
+            (Core_1.extractArgumentsFromFunction(callback));
+        this.addComponent(name, callback);
+        return this;
     }
 }
-module.exports = Injector;
+exports.Injector = Injector;
+exports.default = Injector;
 //# sourceMappingURL=Injector.js.map

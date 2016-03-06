@@ -1,0 +1,8 @@
+{
+	"locale":"en",
+	"fallbackLocale":"en",
+	"environment":"dev",
+	"appName":"ReclaimJS App",
+	"organization":"Suhail Abood &copy; 2016",
+	"baseUrl":"http://reclaimjs.dev/"
+}

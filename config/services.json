@@ -1,0 +1,23 @@
+{
+	"social":{
+		"facebook":{
+			"appId":"",
+			"appToken":""
+		}
+	},
+	"templateEngine":{
+		"noCache":true
+	},
+	"knex":{
+		"client":"mysql",
+		"connection":{
+			"host":"localhost",
+			"user":"root",
+			"password":"",
+			"database":"reclaimjs"
+		},
+		"migrations":{
+			"tableName":"migrations"
+		}
+	}
+}
